@@ -40,59 +40,66 @@ def report():
   coffee = resources["coffee"]
   return f"""Water: {water}ml
 Milk: {milk}ml
-Coffee: {coffee}g"""
+Coffee: {coffee}g
+Money: ${profit}"""
 
 # Payment function for our coffee machine
 def process_coins():
   """Financial transactions."""
   # Enter coins.
   print("Please insert coins.")
-  quaters = 0.25 * int(input("How many quaters?: "))
-  dimes = 0.10 * int(input("How many dimes?: "))
-  nickles = 0.05 * int(input("How many nickles?: "))
-  pennies = 0.01 * int(input("How many pennies?: "))
+  total = 0.25 * int(input("How many quaters?: "))
+  total += 0.10 * int(input("How many dimes?: "))
+  total += 0.05 * int(input("How many nickles?: "))
+  total += 0.01 * int(input("How many pennies?: "))
 
   # Check if the amount is enough or not , and give the client remainder or refunde.
   global profit
-  profit = max([quaters, dimes, nickles, pennies])
-  cost = MENU[drink]["cost"]
+  cost = MENU[choice]["cost"]
 
-  if profit >= cost:
-    remainder_amount = profit - cost
+  if total >= cost:
+    profit += cost
+    remainder_amount = total - cost
     print(f"Here is ${remainder_amount} in change.")
-    print(f"Here is your {drink} ☕️ . Enjoy!")
+    print(f"Here is your {choice} ☕️ . Enjoy!")
   else:
     print("Sorry that's not enough money. Money refunded.")
-  profit = 0
 
 
-def order_service(resources, drink):
+def is_resource_sufficient(order_ingredients):
+  for key in order_ingredients:
+    if resources[key] < order_ingredients[key]:
+      print(f"Sorry there is not enough {key}")
+      return True
+  return True
+
+def order_service(resources, choice):
   """Prepare coffee and check resources."""
-  if drink == "report":
-    print(report())
-  elif drink == "off":
+  if choice == "off":
     return False
+
+  elif choice == "report":
+    print(report())
+    return True
   else:
     # Check resources sufficient .
-    ingredients_drink = MENU[drink]["ingredients"]
-    for key in ingredients_drink:
-      if resources[key] < ingredients_drink[key]:
-        print(f"Sorry there is not enough {key}")
-        return True
-
-    # Take the content we need from resources.
-    for key in ingredients_drink:
-      resources[key] -= ingredients_drink[key]
+    if not is_resource_sufficient(MENU[choice]['ingredients']):
+      return True
 
     process_coins()
+
+    # Take the content we need from resources.
+    for key in MENU[choice]['ingredients']:
+      resources[key] -= MENU[choice]['ingredients'][key]
+
 
 
 
 # Repeatability steps.
-should_continue = True
-while should_continue:
+is_on = True
+while is_on:
   # Drinks we have for clients, would drink.
-  drink = input(" What would you like? (espresso/latte/cappuccino): ").lower()
+  choice = input(" What would you like? (espresso/latte/cappuccino): ").lower()
 
   # Prepare drink for clinte
-  should_continue = order_service(resources, drink)
+  is_on = order_service(resources, choice)
