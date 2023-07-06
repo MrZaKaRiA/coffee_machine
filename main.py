@@ -65,18 +65,20 @@ def process_coins():
     print("Sorry that's not enough money. Money refunded.")
   profit = 0
 
-# Function for our coffee machine steps
+
 def order_service(resources, drink):
   """Prepare coffee and check resources."""
   if drink == "report":
     print(report())
+  elif drink == "off":
+    return False
   else:
     # Check resources sufficient .
     ingredients_drink = MENU[drink]["ingredients"]
     for key in ingredients_drink:
       if resources[key] < ingredients_drink[key]:
         print(f"Sorry there is not enough {key}")
-        return
+        return True
 
     # Take the content we need from resources.
     for key in ingredients_drink:
@@ -93,5 +95,4 @@ while should_continue:
   drink = input(" What would you like? (espresso/latte/cappuccino): ").lower()
 
   # Prepare drink for clinte
-  order_service(resources, drink)
-
+  should_continue = order_service(resources, drink)
