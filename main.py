@@ -64,9 +64,8 @@ def process_coins():
   else:
     print("Sorry that's not enough money. Money refunded.")
   profit = 0
-  return
 
-
+# Function for our coffee machine steps
 def order_service(resources, drink):
   """Prepare coffee and check resources."""
   if drink == "report":
